@@ -13,10 +13,7 @@ const NoteDetailPage = () => {
   const navigate = useNavigate();
   const { id } = useParams();
 
-  useEffect(() => {
-      fetchNote();
-  }, [id]);
-  console.log({ note });
+  
   
     const fetchNote = async () => {
       try {
@@ -29,7 +26,12 @@ const NoteDetailPage = () => {
         setLoading(false);
       }
     };
-  
+    
+  useEffect(() => {
+    // eslint-disable-next-line
+      fetchNote();
+  }, [id]);
+  console.log({ note });
 
   const handleDelete = async () => {
     if (!window.confirm("Are you sure you want to delete this note")) return;

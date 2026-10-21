@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
+import { useSearchParams } from "react-router";
 import Navbar from "../components/Navbar";
 import RateLimitedUI from "../components/RateLimitedUI";
 import NoteCard from "../components/NoteCard";
 import NotesNotFound from "../components/NotesNotFound";
-import { getAllNotes } from "../services/notesService";
+import SideBar from "../components/Sidebar";
 import toast from "react-hot-toast";
 import api from "../libs/axios";
 
@@ -13,9 +14,10 @@ const HomePage = () => {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
 
-  useEffect(() => {
-    fetchNotes();
-  }, []);
+  // read the sidebar URL
+  const [searchParams] = useSearchParams();
+  const view = searchParams.get("view");
+  const collection = searchParams.get("collection");
 
   const fetchNotes = async () => {
     try {
@@ -36,44 +38,62 @@ const HomePage = () => {
     }
   };
 
-  const filteredNotes = notes.filter(
-    (note) =>
-      note.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      note.content.toLowerCase().includes(searchQuery.toLowerCase()),
-  );
-  return (
-    <div className="min-h-screen">
-      <Navbar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
-      {isRateLimited && <RateLimitedUI />}
+  useEffect(() => {
+    // eslint-disable-next-line
+    fetchNotes();
+  }, []);
 
-      <div className="max-w-7xl mx-auto p-4 mt-6">
-        {loading && (
-          <div className="text-center text-primary py-10">
-            Loading notes....
-          </div>
-        )}
-        {filteredNotes.length === 0 && !isRateLimited && <NotesNotFound />}
-        {filteredNotes.length > 0 && !isRateLimited && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 border-b-2 border-gray-700 mb-5 pb-5">
-            {filteredNotes
-              .filter((note) => note.isPinned)
-              .map((note) => (
+  const filteredNotes = notes.filter((note) => {
+    // 1. filter each note depend on the view ex - view = favorites only keep favourite notes
+    if (view === "archived") {
+      if (!note.isArchived) return false;
+    } else {
+      if (note.isArchived) return false;
+      if (view === "pinned" && !note.isPinned) return false;
+      if (view === "favorites" && !note.isFavorite) return false;
+      if (collection && note.collection !== collection) return false;
+    }
+
+    // 2.match the search?
+    const q = searchQuery.toLowerCase();
+    return (
+      note.title.toLowerCase().includes(q) ||
+      note.content.toLowerCase().includes(q)
+    );
+  });
+
+  const orderedNotes = [...filteredNotes].sort(
+    (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
+  );
+
+  return (
+    <>
+      <SideBar notes={notes} />
+
+      <div className="min-h-screen md:ml-64">
+        <Navbar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+        {isRateLimited && <RateLimitedUI />}
+
+        <div className="max-w-7xl mx-auto p-4 mt-6">
+          {loading && (
+            <div className="text-center text-primary py-10">
+              Loading notes....
+            </div>
+          )}
+
+          {!loading && orderedNotes.length === 0 && !isRateLimited && (
+            <NotesNotFound />
+          )}
+          {orderedNotes.length > 0 && !isRateLimited && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {orderedNotes.map((note) => (
                 <NoteCard key={note._id} note={note} setNotes={setNotes} />
               ))}
-          </div>
-        )}
-        <br />
-        {filteredNotes.length > 0 && !isRateLimited && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredNotes
-              .filter((note) => !(note.isPinned))
-              .map((note) => (
-                <NoteCard key={note._id} note={note} setNotes={setNotes} />
-              ))}
-          </div>
-        )}
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

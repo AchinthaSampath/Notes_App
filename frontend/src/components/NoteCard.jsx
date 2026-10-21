@@ -28,6 +28,7 @@ const NoteCard = ({ note, setNotes }) => {
     // Update the notes state directly without refetching
     setNotes((prev) =>prev.map((note) => note._id === id ? { ...note, isPinned: !note.isPinned } : note));
     note.isPinned? toast.success("Note Unpinned"): toast.success("Note Pinned");
+  // eslint-disable-next-line no-unused-vars
   } catch (error) {
     toast.error("Failed to update note");
   }

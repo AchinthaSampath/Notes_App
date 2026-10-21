@@ -7,21 +7,27 @@ const Navbar = ({ searchQuery, setSearchQuery }) => {
     <header className="bg-base-300 border-b border-base-content/10">
       <div className="mx-auto max-w-6xl p-4">
         <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold text-primary font-mono tracking-tight">
-            Notepad
-          </h1>
-          <input className="p-3 rounded-2xl bg-[#c2148e80]"
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wide text-indigo-600 dark:text-indigo-400">
+              {new Date().toLocaleDateString("en-US", {
+                weekday: "long",
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })}
+            </p>
+            <h1 className="mt-1 text-3xl font-semibold text-slate-900 dark:text-white">
+              Good morning, User.
+            </h1>
+          </div>
+
+          <input
+            className="p-2 rounded-2xl bg-[#574f5480]"
             type="text"
-            placeholder="Search..."
+            placeholder="Search your notes..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
-          <div className="flex items-center gap-4">
-            <Link to={"/create"} className="btn btn-primary">
-              <PlusIcon className="size-5" />
-              <span>New Note</span>
-            </Link>
-          </div>
         </div>
       </div>
     </header>

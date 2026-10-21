@@ -23,12 +23,12 @@ export const getNoteById = async (req, res) => {
 
 export const createNote = async (req, res) => {
   try {
-    const { title, content } = req.body;
-    if (!title || !content) {
+    const { title, content, collection} = req.body;
+    if (!title || !content || !collection) {
       //backend validation
       return res.status(400).json({ message: "Required fields missing" });
     }
-    const note = new Note({ title, content });
+    const note = new Note({ title, content, collection });
     const savedNote = await note.save();
     res.status(201).json(savedNote);
   } catch (error) {

@@ -1,4 +1,4 @@
-import { ArrowLeftIcon } from "lucide-react";
+import { ArrowLeftIcon,Tag } from "lucide-react";
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router";
@@ -7,20 +7,21 @@ import api from "../libs/axios";
 const CreatePage = () => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [collection, setCollection] = useState("Ideas");
   const [loading, setLoading] = useState(false);
 
-  const navigate = useNavigate();// navigate to pages
+  const navigate = useNavigate(); // navigate to pages
 
   const handleSubmit = async (e) => {
-    e.preventDefault();// won't refresh
+    e.preventDefault(); // won't refresh
 
-    if (!title.trim() || !content.trim()) {
+    if (!title.trim() || !content.trim() || !collection.trim()) {
       toast.error("All fields are required");
       return;
     }
     setLoading(true);
     try {
-      await api.post("/notes", { title, content });
+      await api.post("/notes", { title, content, collection});
       toast.success("Note created successfully");
       navigate("/");
     } catch (error) {
@@ -72,7 +73,21 @@ const CreatePage = () => {
                     value={content}
                     onChange={(e) => setContent(e.target.value)}
                   />
-                  <div className="card-actions justify-end">
+                  <div className="card-actions justify-between">
+                    <div className="flex items-center">
+                      <Tag className="size-4 opacity-25"/>
+                    <select
+                      defaultValue="Pick a collection"
+                      className="select select-ghost"
+                      onChange={(e) => setCollection(e.target.value)}
+                    >
+                      <option>Ideas</option>
+                      <option>Personal</option>
+                      <option>Tasks</option>
+                      <option>Work</option>
+                      <option>Journal</option>
+                    </select>
+                    </div>
                     <button
                       type="submit"
                       className="btn btn-primary mt-4"
@@ -92,4 +107,3 @@ const CreatePage = () => {
 };
 
 export default CreatePage;
-
