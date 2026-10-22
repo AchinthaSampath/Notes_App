@@ -8,14 +8,9 @@ import {
   Archive,
   Settings,
 } from "lucide-react";
+import { COLLECTIONS } from "../libs/collection";
 
-const collections = [
-  { name: "Ideas", dot: "bg-violet-400" },
-  { name: "Personal", dot: "bg-sky-400" },
-  { name: "Tasks", dot: "bg-amber-400" },
-  { name: "Work", dot: "bg-pink-400" },
-  { name: "Journal", dot: "bg-emerald-400" },
-];
+
 
 const SideBar = ({ notes = [] }) => {
   const [searchParams] = useSearchParams();
@@ -74,7 +69,7 @@ const SideBar = ({ notes = [] }) => {
         Collections
       </p>
       <nav className="flex flex-col gap-1">
-        {collections.map((c) => (
+        {COLLECTIONS.map((c) => (
           <Link
             key={c.name}
             to={`/?collection=${c.name}`}

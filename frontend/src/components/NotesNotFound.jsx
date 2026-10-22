@@ -9,10 +9,10 @@ const NotesNotFound = () => {
       </div>
       <h3 className="text-2xl font-bold">No notes yet</h3>
       <p className="text-base-content/70">
-        Start capturing your ideas by creating your first note.
+        Start capturing your ideas by creating a note.
       </p>
       <Link to="/create" className="btn btn-primary">
-        Create Your First Note
+        Create Your Note
       </Link>
     </div>
   );

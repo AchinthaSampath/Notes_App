@@ -1,69 +1,162 @@
-import { PenSquareIcon, Trash2Icon, Pin } from "lucide-react";
+import {
+  PenSquareIcon,
+  Trash2Icon,
+  Pin,
+  Star,
+  ArchiveIcon,
+  ArchiveRestoreIcon,
+  ClockIcon,
+} from "lucide-react";
 import { Link } from "react-router";
-import { formatDate } from "../libs/utils";
+import { formatNoteDate } from "../libs/utils";
+import { getCollection } from "../libs/collection";
 import api from "../libs/axios";
 import toast from "react-hot-toast";
 
 const NoteCard = ({ note, setNotes }) => {
-  const handleDelete = async (e, id) => {
-    e.preventDefault(); //navigation to noteDetailPage prevented
+  const collection = getCollection(note.collection);
 
-    if (!window.confirm("Are you sure you want to delete this note")) return;
-
+  // one method for every change: pin, favorite, archive, restore
+  const updateNote = async (changes, message) => {
     try {
-      await api.delete(`/notes/${id}`);
-      setNotes((prev) => prev.filter((note) => note._id !== id)); //update the UI by getting rid of old notes
-      toast.success("Note deleted successfully");
+      await api.patch(`/notes/${note._id}`, changes);
+      setNotes((prev) =>
+        prev.map((n) => (n._id === note._id ? { ...n, ...changes } : n)),
+      );
+      toast.success(message);
     } catch (error) {
-      console.log("error in handleDelete", error);
-      toast.error("failed to delete the note");
+      console.log("error updating note", error);
+      toast.error("Failed to update note");
     }
   };
 
-  const handleIsPinned = async (e, id) => {
-  e.preventDefault();
-  try {
-   await api.patch(`/notes/${id}`); // or whatever your endpoint is
-    
-    // Update the notes state directly without refetching
-    setNotes((prev) =>prev.map((note) => note._id === id ? { ...note, isPinned: !note.isPinned } : note));
-    note.isPinned? toast.success("Note Unpinned"): toast.success("Note Pinned");
-  // eslint-disable-next-line no-unused-vars
-  } catch (error) {
-    toast.error("Failed to update note");
-  }
-};
+  const handleDelete = async () => {
+    if (!window.confirm("Delete this note permanently?")) return;
+
+    try {
+      await api.delete(`/notes/${note._id}`);
+      setNotes((prev) => prev.filter((n) => n._id !== note._id));
+      toast.success("Note deleted");
+    } catch (error) {
+      console.log("error in handleDelete", error);
+      toast.error("Failed to delete the note");
+    }
+  };
+
+  const iconBase = "size-4 transition";
+  const iconIdle = "text-base-content/40 hover:text-base-content";
 
   return (
-    <div
-      className="card bg-base-100 hover:shadow-lg transition-all duration-200 
-      border-t-4 border-solid border-[#c2148e80]"
-    >
-      <div className="card-body">
-        <button onClick={(e) => handleIsPinned(e, note._id)}>
-          {note.isPinned ? (
-            <Pin className="size-4 fill-current" />
-          ) : (
-            <Pin className="size-4" />
-          )}
-        </button>
-        <h3 className="card-title text-base-content">{note.title}</h3>
-        <p className="text-base-content/70 line-clamp-3">{note.content}</p>
-        <div className="card-actions justify-between items-center mt-4">
-          <span className="text-sm text-base-content/60">
-            {formatDate(new Date(note.createdAt))}
-          </span>
-          <div className="flex items-center gap-1">
-            <Link to={`/note/${note._id}`}>
-              <PenSquareIcon className="size-4" />
-            </Link>
-            <button
-              className="btn btn-ghost btn-xs text-error"
-              onClick={(e) => handleDelete(e, note._id)}
+    <div className="group flex flex-col rounded-2xl border border-white/10 bg-[#16161d] p-5 transition-all duration-200 hover:border-pink-500/70 hover:shadow-[0_0_20px_-2px_rgba(236,72,153,0.45)]">
+      {/* top row: pin + tag on the left, star on the right */}
+      <div className="flex items-center justify-between">
+        {/*pin*/}
+        <div className="flex items-center">
+          <button
+            title={note.isPinned ? "Unpin" : "Pin"}
+            className={`mr-2 shrink-0 transition-all duration-200 ${
+              note.isPinned
+                ? ""
+                : "md:mr-0 md:w-0 md:overflow-hidden md:opacity-0 md:focus-visible:mr-2 md:focus-visible:w-4 md:focus-visible:opacity-100 md:group-hover:mr-2 md:group-hover:w-4 md:group-hover:opacity-100"
+            }`}
+            onClick={() =>
+              updateNote(
+                { isPinned: !note.isPinned },
+                note.isPinned ? "Note unpinned" : "Note pinned",
+              )
+            }
+          >
+            <Pin
+              className={`size-4 transition ${
+                note.isPinned ? "fill-pink-400 text-pink-400" : iconIdle
+              }`}
+            />
+          </button>
+
+          {/*collection tag*/}
+          {collection && (
+            <span
+              className={`rounded-md border px-2 py-0.5 text-[11px] font-medium ${collection.tag}`}
             >
-              <Trash2Icon className="size-4" />
-            </button>
-          </div>
+              {collection.name}
+            </span>
+          )}
+        </div>
+
+        {/*favourite*/}
+        <button
+          title={note.isFavorite ? "Remove from favorites" : "Add to favorites"}
+          onClick={() =>
+            updateNote(
+              { isFavorite: !note.isFavorite },
+              note.isFavorite ? "Removed from favorites" : "Added to favorites",
+            )
+          }
+        >
+          <Star
+            className={`${iconBase} ${
+              note.isFavorite ? "fill-yellow-400 text-yellow-400" : iconIdle
+            }`}
+          />
+        </button>
+      </div>
+
+      {/*title, content*/}
+      <h3 className="mt-4 text-base font-semibold text-base-content">
+        {note.title}
+      </h3>
+      <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-base-content/55">
+        {note.content}
+      </p>
+
+      {/*date*/}
+      <div className="mt-auto flex items-center justify-between pt-5">
+        <span className="flex items-center gap-1.5 text-xs text-base-content/50">
+          <ClockIcon className="size-3.5" />
+          {formatNoteDate(note.createdAt)}
+        </span>
+
+        {/*Archive = show restore & delete. Not Archived = show edit & archive */}
+        <div className="flex items-center gap-1 md:opacity-0 md:transition md:focus-within:opacity-100 md:group-hover:opacity-100">
+          {note.isArchived ? (
+            <>
+              <button
+                title="Restore"
+                className="btn btn-ghost btn-xs"
+                onClick={() =>
+                  updateNote({ isArchived: false }, "Note restored")
+                }
+              >
+                <ArchiveRestoreIcon className="size-4" />
+              </button>
+              <button
+                title="Delete permanently"
+                className="btn btn-ghost btn-xs text-error"
+                onClick={handleDelete}
+              >
+                <Trash2Icon className="size-4" />
+              </button>
+            </>
+          ) : (
+            <>
+              <Link
+                to={`/note/${note._id}`}
+                title="Edit"
+                className="btn btn-ghost btn-xs"
+              >
+                <PenSquareIcon className="size-4" />
+              </Link>
+              <button
+                title="Archive"
+                className="btn btn-ghost btn-xs"
+                onClick={() =>
+                  updateNote({ isArchived: true }, "Note archived")
+                }
+              >
+                <ArchiveIcon className="size-4" />
+              </button>
+            </>
+          )}
         </div>
       </div>
     </div>

@@ -1,5 +1,6 @@
 # Dependencies
 node_modules/
+backend/server.js
 
 # Environment variables (all .env variants)
 .env
@@ -11,6 +12,8 @@ dist/
 dist-ssr/
 build/
 coverage/
+
+
 
 # Logs
 logs/

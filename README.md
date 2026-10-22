@@ -1,16 +1,139 @@
-# React + Vite
+# Notes App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A full-stack note-taking application built with the MERN stack. Users can create, edit, delete, search, and pin notes through a responsive and intuitive interface.
 
-Currently, two official plugins are available:
+## Live Demo
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+🔗 https://notes-app-ly7k.onrender.com/
 
-## React Compiler
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Features
 
-## Expanding the ESLint configuration
+- Create new notes
+- Edit existing notes
+- Delete notes
+- Pin and unpin important notes
+- Search notes by title or content
+- Rate limiting for API protection
+- Responsive user interface
+- Toast notifications for user feedback
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+---
+
+## Screenshots
+<img width="1241" height="603" alt="image" src="https://github.com/user-attachments/assets/f2516c28-6b95-4cb1-aeb3-5d258a45bf3f" />
+<img width="1139" height="471" alt="image" src="https://github.com/user-attachments/assets/fca48463-d3d1-4e37-b872-d64ea49918ff" />
+
+---
+
+## Tech Stack
+
+### Frontend
+- React (Vite)
+- Tailwind CSS
+- DaisyUI
+- React Hot Toast
+- Axios
+
+### Backend
+- Node.js
+- Express.js
+
+### Database
+- MongoDB
+- Mongoose
+
+### Deployment
+- Render
+
+---
+
+
+## Getting Started
+
+### Prerequisites
+
+Before running this project, make sure you have:
+
+- Node.js installed
+- npm installed
+- MongoDB Atlas account
+
+---
+
+## Installation
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/Achch4/Notes_App.git
+cd notes-app
+```
+
+### 2. Install Backend Dependencies
+
+```bash
+cd backend
+npm install
+```
+
+### Create a `.env` file in the backend directory
+
+```env
+PORT=5000
+MONGODB_URI=your_mongodb_connection_string
+```
+
+### Start the Backend Server
+
+```bash
+npm run dev
+```
+
+---
+
+### 3. Install Frontend Dependencies
+
+Open a new terminal:
+
+```bash
+cd frontend
+npm install
+```
+
+### Create a `.env` file in the frontend directory
+
+```env
+VITE_API_URL=http://localhost:5000/api
+```
+
+### Start the Frontend Development Server
+
+```bash
+npm run dev
+```
+
+---
+
+## Usage
+
+Open your browser and navigate to:
+
+```text
+http://localhost:5173
+```
+
+You can then:
+
+- Create notes
+- Edit notes
+- Delete notes
+- Pin important notes
+- Search through existing notes
+
+---
+
+
+## License
+
+This project is for educational and portfolio purposes.
