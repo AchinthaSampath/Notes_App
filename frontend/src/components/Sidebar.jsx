@@ -6,14 +6,28 @@ import {
   Pin,
   Star,
   Archive,
-  Settings,
+  LogOutIcon,
+  ChevronsUpDownIcon,
 } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
 import { COLLECTIONS } from "../libs/collection";
 
-
+{
+  /*creat initials for profile*/
+}
+const getInitials = (name = "") => {
+  const parts = name
+    .trim()
+    .split(/[\s._-]+/)
+    .filter(Boolean);
+  if (parts.length === 0) return "?";
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return (parts[0][0] + parts[1][0]).toUpperCase();
+};
 
 const SideBar = ({ notes = [] }) => {
   const [searchParams] = useSearchParams();
+  const { user, logout } = useAuth();
   const view = searchParams.get("view"); // pinned | favorites | archived
   const collection = searchParams.get("collection"); // personal | work | task
 
@@ -26,7 +40,7 @@ const SideBar = ({ notes = [] }) => {
 
   const active = notes.filter((n) => !n.isArchived); // map all notes besides archived ones
   const counts = {
-    all: active.length, //number of all notes 
+    all: active.length, //number of all notes
     pinned: active.filter((n) => n.isPinned).length, //number of pinned notes
   };
 
@@ -44,10 +58,10 @@ const SideBar = ({ notes = [] }) => {
       <Link to="/create" className="btn btn-primary mb-6 w-full">
         <Plus size={18} /> New note
       </Link>
-      
-      {/* Views | !view && !collection == true(no filter show everything besides archived)*/} 
+
+      {/* Views | !view && !collection == true(no filter show everything besides archived)*/}
       <nav className="flex flex-col gap-1">
-        <Link to="/" className={itemClass(!view && !collection)}> 
+        <Link to="/" className={itemClass(!view && !collection)}>
           <LayoutGrid size={18} /> All notes
           <span className="ml-auto text-xs opacity-60">{counts.all}</span>
         </Link>
@@ -81,14 +95,39 @@ const SideBar = ({ notes = [] }) => {
         ))}
       </nav>
 
-      {/* Footer */}
+      {/* Profile */}
       <div className="mt-auto pt-6">
-        <button className={itemClass(false)}>
-          <Settings size={18} /> Settings
-        </button>
-        <p className="mt-3 px-3 text-xs text-base-content/40">
-          {notes.length} notes
-        </p>
+        <div className="dropdown dropdown-top w-full">
+          <div
+            tabIndex={0}
+            role="button"
+            className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 transition hover:bg-base-content/5"
+          >
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-xs font-semibold text-indigo-600">
+              {getInitials(user?.username)}
+            </span>
+            <span className="min-w-0 flex-1 text-left">
+              <span className="block truncate text-sm font-medium">
+                {user?.username}
+              </span>
+              <span className="block truncate text-xs text-base-content/50">
+                {user?.email}
+              </span>
+            </span>
+            <ChevronsUpDownIcon className="size-4 shrink-0 text-base-content/40" />
+          </div>
+
+          <ul
+            tabIndex={0}
+            className="menu dropdown-content mb-2 w-full rounded-xl border border-base-content/10 bg-base-100 p-2 shadow-lg"
+          >
+            <li>
+              <button onClick={logout} className="text-error">
+                <LogOutIcon className="size-4" /> Log out
+              </button>
+            </li>
+          </ul>
+        </div>
       </div>
     </aside>
   );

@@ -11,6 +11,7 @@ const noteschema = new mongoose.Schema(
     isFavorite: { type: Boolean, default: false },
     isArchived: { type: Boolean, default: false },
     collection: { type: String, default: "" },
+    user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true, index: true }, //owner field
   },
   { timestamps: true }, // createdAt,updatedAt
 );
