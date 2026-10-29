@@ -4,6 +4,7 @@ import cors from "cors";
 import path, { dirname } from "path";
 
 import notesRoutes from "./src/routes/notesRoutes.js";
+import authRoutes from "./src/routes/authRoutes.js"
 import connectDB from "./src/config/db.js";
 import rateLimiter from "./src/middleware/rateLimiter.js";
 
@@ -29,6 +30,7 @@ app.use((req, res, next) => {
 });
 app.use(rateLimiter);
 
+app.use("/api/auth", authRoutes);
 app.use("/api/notes", notesRoutes);
 
 if (process.env.NODE_ENV == "production") {
