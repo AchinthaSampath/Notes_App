@@ -18,7 +18,7 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (res) => res,
   (error) => {
-    const url = error.config?.url || "";
+    const url = error.config?.url || ""; // isAuthCall  - wrong password on login returns a 401
     const isAuthCall = url.includes("/auth/login") || url.includes("/auth/register");
 
     if (error.response?.status === 401 && !isAuthCall) {
