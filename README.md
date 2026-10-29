@@ -16,7 +16,7 @@ A full-stack note-taking app built with the MERN stack. Create an account, organ
 
 | Edit note | Login |
 | --- | --- |
-| ![Edit note] (image-3.png)| ![Login] (image-4.png) |
+| ![Edit note](image-3.png)| ![Login](image-4.png) |
 
 ## About this project
 
